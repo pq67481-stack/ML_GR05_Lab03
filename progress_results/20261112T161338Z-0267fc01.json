@@ -1,0 +1,32 @@
+{
+  "run_id": "20261112T161338Z-0267fc01",
+  "status": "completed",
+  "paths": {
+    "data": "data/processed/20261112T161338Z-0267fc01",
+    "reports": "reports/20261112T161338Z-0267fc01",
+    "model": "models/20261112T161338Z-0267fc01",
+    "images": "docs/images/20261112T161338Z-0267fc01"
+  },
+  "history": [
+    {
+      "time_utc": "2026-11-12T16:13:38.102781+00:00",
+      "stage": "data",
+      "message": "Đọc CSV, kiểm tra dữ liệu và chia train/test."
+    },
+    {
+      "time_utc": "2026-11-12T16:13:38.982468+00:00",
+      "stage": "cv",
+      "message": "So sánh K-means và Gaussian Mixture trên các fold của train."
+    },
+    {
+      "time_utc": "2026-11-12T16:13:50.852521+00:00",
+      "stage": "evaluation",
+      "message": "Đánh giá cấu hình kmeans k=4 đã chọn."
+    },
+    {
+      "time_utc": "2026-11-12T16:13:53.461496+00:00",
+      "stage": "completed",
+      "message": "Đã lưu mô hình, dữ liệu, biểu đồ và báo cáo."
+    }
+  ]
+}

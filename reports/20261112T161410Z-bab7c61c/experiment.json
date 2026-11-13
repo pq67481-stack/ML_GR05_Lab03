@@ -1,0 +1,50 @@
+{
+  "config": {
+    "data": {
+      "path": "data/raw/Mall_Customers.csv",
+      "test_size": 0.2,
+      "seed": 42
+    },
+    "features": [
+      "Age",
+      "Annual Income (k$)",
+      "Spending Score (1-100)"
+    ],
+    "training": {
+      "folds": 5,
+      "cluster_counts": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "kmeans": {
+        "init": "k-means++",
+        "n_init": 30,
+        "max_iter": 300
+      },
+      "gmm": {
+        "covariance_type": "full",
+        "n_init": 15,
+        "max_iter": 300,
+        "reg_covar": 1e-06
+      }
+    },
+    "stability": {
+      "repeats": 30,
+      "fraction": 0.8
+    }
+  },
+  "raw_sha256": "416a4f62a8f33841a16e1db5297f0e05d3b65b05e73632cedae58e739e1e1f77",
+  "versions": {
+    "python": "3.12.14",
+    "sklearn": "1.7.2",
+    "pandas": "2.3.3",
+    "numpy": "2.3.5"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "family": "kmeans",
+  "k": 4,
+  "train_rows": 160,
+  "test_rows": 40,
+  "train": {
+    "n_clusters_observed": 4,
+    "smallest_cluster": 27,
+    "silhouette": 0.4038506787620693,
+    "davies_bouldin": 0.9412314367054637,
+    "calinski_harabasz": 98.74605125216605,
+    "negative_fraction": 0.00625
+  },
+  "test": {
+    "n_clusters_observed": 4,
+    "smallest_cluster": 5,
+    "silhouette": 0.3826699470035958,
+    "davies_bouldin": 0.8718132153386076,
+    "calinski_harabasz": 26.444051657405833,
+    "negative_fraction": 0.1
+  },
+  "stability": {
+    "repeats": 30,
+    "mean_ari": 0.9950196341346614,
+    "std_ari": 0.01863482272888086,
+    "median_ari": 1.0,
+    "min_ari": 0.9252945120199214,
+    "max_ari": 1.0
+  }
+}

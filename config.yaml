@@ -1,0 +1,23 @@
+data:
+  path: data/raw/Mall_Customers.csv
+  test_size: 0.20
+  seed: 42
+features:
+  - Age
+  - Annual Income (k$)
+  - Spending Score (1-100)
+training:
+  folds: 5
+  cluster_counts: [2, 3, 4, 5, 6, 7, 8, 9, 10]
+  kmeans:
+    init: k-means++
+    n_init: 30
+    max_iter: 300
+  gmm:
+    covariance_type: full
+    n_init: 15
+    max_iter: 300
+    reg_covar: 0.000001
+stability:
+  repeats: 30
+  fraction: 0.80

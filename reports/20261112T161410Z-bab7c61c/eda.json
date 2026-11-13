@@ -1,0 +1,86 @@
+{
+  "rows_raw": 200,
+  "rows_clean": 200,
+  "rows_removed": 0,
+  "missing_raw": {
+    "CustomerID": 0,
+    "Gender": 0,
+    "Age": 0,
+    "Annual Income (k$)": 0,
+    "Spending Score (1-100)": 0
+  },
+  "gender_counts": {
+    "Female": 112,
+    "Male": 88
+  },
+  "iqr_flags": {
+    "Age": 0,
+    "Annual Income (k$)": 2,
+    "Spending Score (1-100)": 0
+  },
+  "iqr_flagged_rows": [
+    {
+      "CustomerID": 199,
+      "Gender": "Male",
+      "Age": 32,
+      "Annual Income (k$)": 137,
+      "Spending Score (1-100)": 18
+    },
+    {
+      "CustomerID": 200,
+      "Gender": "Male",
+      "Age": 30,
+      "Annual Income (k$)": 137,
+      "Spending Score (1-100)": 83
+    }
+  ],
+  "summary": {
+    "Age": {
+      "count": 200.0,
+      "mean": 38.85,
+      "std": 13.969,
+      "min": 18.0,
+      "25%": 28.75,
+      "50%": 36.0,
+      "75%": 49.0,
+      "max": 70.0
+    },
+    "Annual Income (k$)": {
+      "count": 200.0,
+      "mean": 60.56,
+      "std": 26.265,
+      "min": 15.0,
+      "25%": 41.5,
+      "50%": 61.5,
+      "75%": 78.0,
+      "max": 137.0
+    },
+    "Spending Score (1-100)": {
+      "count": 200.0,
+      "mean": 50.2,
+      "std": 25.824,
+      "min": 1.0,
+      "25%": 34.75,
+      "50%": 50.0,
+      "75%": 73.0,
+      "max": 99.0
+    }
+  },
+  "pearson": {
+    "Age": {
+      "Age": 1.0,
+      "Annual Income (k$)": -0.012,
+      "Spending Score (1-100)": -0.327
+    },
+    "Annual Income (k$)": {
+      "Age": -0.012,
+      "Annual Income (k$)": 1.0,
+      "Spending Score (1-100)": 0.01
+    },
+    "Spending Score (1-100)": {
+      "Age": -0.327,
+      "Annual Income (k$)": 0.01,
+      "Spending Score (1-100)": 1.0
+    }
+  }
+}

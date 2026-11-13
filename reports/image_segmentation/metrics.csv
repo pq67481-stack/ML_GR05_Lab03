@@ -1,0 +1,4 @@
+image,k,working_width,working_height,output_width,output_height,mse_rgb,inertia,palette
+grace_hopper.jpg,3,273,320,512,600,907.2254731379732,237737152.0,#1c1320 #5c7ebc #d39d83
+grace_hopper.jpg,6,273,320,512,600,308.1899114774115,80748016.0,#5b7ebe #13111f #d7a790 #f4ece6 #81332a #c47851
+grace_hopper.jpg,9,273,320,512,600,170.37025335775337,44637664.0,#1a1943 #6d8ec7 #a55b42 #120f16 #f5eee8 #486db2 #78241d #d8ae9a #d38a60

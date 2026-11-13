@@ -1,0 +1,4 @@
+2026-11-12T16:14:10.432466+00:00 [data] Đọc CSV, kiểm tra dữ liệu và chia train/test.
+2026-11-12T16:14:11.092252+00:00 [cv] So sánh K-means và Gaussian Mixture trên các fold của train.
+2026-11-12T16:14:23.052221+00:00 [evaluation] Đánh giá cấu hình kmeans k=4 đã chọn.
+2026-11-12T16:14:25.822503+00:00 [completed] Đã lưu mô hình, dữ liệu, biểu đồ và báo cáo.
