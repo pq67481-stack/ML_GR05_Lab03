@@ -1,0 +1,119 @@
+{
+  "rows": 1000,
+  "columns": [
+    "id",
+    "age",
+    "gender",
+    "income",
+    "spending_score",
+    "membership_years",
+    "purchase_frequency",
+    "preferred_category",
+    "last_purchase_amount"
+  ],
+  "missing": {
+    "id": 0,
+    "age": 0,
+    "gender": 0,
+    "income": 0,
+    "spending_score": 0,
+    "membership_years": 0,
+    "purchase_frequency": 0,
+    "preferred_category": 0,
+    "last_purchase_amount": 0
+  },
+  "duplicate_rows": 0,
+  "duplicate_ids": 0,
+  "duplicate_features": 0,
+  "summary": {
+    "age": {
+      "count": 1000.0,
+      "mean": 43.783,
+      "std": 15.042213240716249,
+      "min": 18.0,
+      "25%": 30.0,
+      "50%": 45.0,
+      "75%": 57.0,
+      "max": 69.0
+    },
+    "income": {
+      "count": 1000.0,
+      "mean": 88500.8,
+      "std": 34230.77112248042,
+      "min": 30004.0,
+      "25%": 57911.75,
+      "50%": 87845.5,
+      "75%": 116110.25,
+      "max": 149973.0
+    },
+    "spending_score": {
+      "count": 1000.0,
+      "mean": 50.685,
+      "std": 28.95517530903892,
+      "min": 1.0,
+      "25%": 26.0,
+      "50%": 50.0,
+      "75%": 76.0,
+      "max": 100.0
+    }
+  },
+  "correlations": {
+    "age": {
+      "age": 1.0,
+      "income": -0.0006877996534025776,
+      "spending_score": 0.01770717196365798
+    },
+    "income": {
+      "age": -0.0006877996534025776,
+      "income": 1.0,
+      "spending_score": 1.9828981931970823e-05
+    },
+    "spending_score": {
+      "age": 0.01770717196365798,
+      "income": 1.9828981931970823e-05,
+      "spending_score": 1.0
+    }
+  },
+  "gender_counts": {
+    "Male": 357,
+    "Other": 327,
+    "Female": 316
+  },
+  "splits": [
+    {
+      "split_seed": 0,
+      "k": 8,
+      "validation_silhouette": 0.2772133623283823,
+      "test_silhouette": 0.2545719767128542,
+      "test_clusters": 8
+    },
+    {
+      "split_seed": 1,
+      "k": 7,
+      "validation_silhouette": 0.2746518538235257,
+      "test_silhouette": 0.28648109459751603,
+      "test_clusters": 7
+    },
+    {
+      "split_seed": 2,
+      "k": 7,
+      "validation_silhouette": 0.32003095898286643,
+      "test_silhouette": 0.24348563884487162,
+      "test_clusters": 7
+    },
+    {
+      "split_seed": 3,
+      "k": 7,
+      "validation_silhouette": 0.2727241925554991,
+      "test_silhouette": 0.2529048882931243,
+      "test_clusters": 7
+    },
+    {
+      "split_seed": 42,
+      "k": 8,
+      "validation_silhouette": 0.2840989570561682,
+      "test_silhouette": 0.2829366575100434,
+      "test_clusters": 8
+    }
+  ]
+}

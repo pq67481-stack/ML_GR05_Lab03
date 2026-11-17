@@ -1,4 +1,7 @@
 .venv/
+.venv_demo/
 __pycache__/
+*.py[cod]
 .ipynb_checkpoints/
+.pytest_cache/
 .mall-download.zip

@@ -1,23 +1,21 @@
-data:
-  path: data/raw/Mall_Customers.csv
-  test_size: 0.20
-  seed: 42
-features:
-  - Age
-  - Annual Income (k$)
-  - Spending Score (1-100)
-training:
-  folds: 5
-  cluster_counts: [2, 3, 4, 5, 6, 7, 8, 9, 10]
-  kmeans:
-    init: k-means++
-    n_init: 30
-    max_iter: 300
-  gmm:
-    covariance_type: full
-    n_init: 15
-    max_iter: 300
-    reg_covar: 0.000001
-stability:
-  repeats: 30
-  fraction: 0.80
+{
+  "model": {
+    "n_clusters": 3,
+    "init": "random",
+    "n_init": 5,
+    "max_iter": 300,
+    "tol": 0.0001,
+    "random_state": 42
+  },
+  "experiment": {
+    "cluster_counts": [2, 3, 4, 5, 6, 7, 8],
+    "selection_metric": "validation_silhouette"
+  },
+  "data": {
+    "train_path": "data/processed/train_scaled.csv",
+    "validation_path": "data/processed/validation_scaled.csv",
+    "test_path": "data/processed/test_scaled.csv",
+    "scaler_path": "data/processed/train_scaler.json",
+    "features": ["Age", "Annual Income", "Spending Score"]
+  }
+}

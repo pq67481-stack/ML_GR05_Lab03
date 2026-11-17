@@ -1,0 +1,90 @@
+{
+  "run_id": "20261116T175811Z_f3ae42f1",
+  "finished_at_utc": "2026-11-16T17:58:21.686403+00:00",
+  "config": {
+    "model": {
+      "n_clusters": 3,
+      "init": "random",
+      "n_init": 5,
+      "max_iter": 300,
+      "tol": 0.0001,
+      "random_state": 42
+    },
+    "experiment": {
+      "cluster_counts": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "selection_metric": "validation_silhouette"
+    },
+    "data": {
+      "train_path": "data/processed/train_scaled.csv",
+      "validation_path": "data/processed/validation_scaled.csv",
+      "test_path": "data/processed/test_scaled.csv",
+      "scaler_path": "data/processed/train_scaler.json",
+      "features": [
+        "Age",
+        "Annual Income",
+        "Spending Score"
+      ]
+    }
+  },
+  "metrics": {
+    "chosen_k": 6,
+    "selection": "highest_valid_validation_silhouette",
+    "train_rows": 10555,
+    "validation_rows": 2261,
+    "test_rows": 2263,
+    "train_inertia": 10398.497768541074,
+    "validation_silhouette": 0.2817985317646459,
+    "test_silhouette": 0.2923276527917511,
+    "test_clusters_present": 6,
+    "iterations": 66,
+    "converged": true,
+    "initial_config": {
+      "n_clusters": 3,
+      "init": "random",
+      "n_init": 5,
+      "max_iter": 300,
+      "tol": 0.0001,
+      "random_state": 42
+    },
+    "cluster_counts_tried": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "inputs": {
+    "train_path": {
+      "path": "data/processed/train_scaled.csv",
+      "sha256": "16aa0d6573c78abfc2b897e6be78b19941600232af1b0ec9646c143893529e78"
+    },
+    "validation_path": {
+      "path": "data/processed/validation_scaled.csv",
+      "sha256": "8d8a4baab994fbc6ad5b202163569ae4ceb3e98b4a7a3f5bd1a56134e80145a6"
+    },
+    "test_path": {
+      "path": "data/processed/test_scaled.csv",
+      "sha256": "2a3ec010c229f7ce933e6335d2dd3d39913e5bebf0ba8e3a24e938115f4f7b05"
+    },
+    "scaler_path": {
+      "path": "data/processed/train_scaler.json",
+      "sha256": "b96bc0f77034adbee13b40c264912d4ca04b60687bf3418cbb6946ba852f64bd"
+    }
+  },
+  "versions": {
+    "python": "3.12.8",
+    "numpy": "2.0.2",
+    "pandas": "3.0.1"
+  }
+}

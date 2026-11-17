@@ -1,0 +1,30 @@
+{
+  "chosen_k": 6,
+  "selection": "highest_valid_validation_silhouette",
+  "train_rows": 10555,
+  "validation_rows": 2261,
+  "test_rows": 2263,
+  "train_inertia": 10398.497768541074,
+  "validation_silhouette": 0.2817985317646459,
+  "test_silhouette": 0.2923276527917511,
+  "test_clusters_present": 6,
+  "iterations": 66,
+  "converged": true,
+  "initial_config": {
+    "n_clusters": 3,
+    "init": "random",
+    "n_init": 5,
+    "max_iter": 300,
+    "tol": 0.0001,
+    "random_state": 42
+  },
+  "cluster_counts_tried": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ]
+}

@@ -1,44 +1,45 @@
+"""Nạp mô hình và chuyển dữ liệu khách hàng gốc thành nhãn cụm."""
+
 import argparse
-import json
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
-
-from .model import load_model
-from .preprocess import AGE, INCOME, ROOT, SPEND
-from .tracking import latest_run
+from src.model import load_model
 
 
-def assign_customer(bundle: dict, age: float, income: float, spending: float) -> dict:
-    values = {AGE: age, INCOME: income, SPEND: spending}
-    if not np.isfinite(list(values.values())).all():
-        raise ValueError("Tuổi, thu nhập và điểm chi tiêu phải là số hữu hạn.")
-    if age <= 0 or income < 0 or not 1 <= spending <= 100:
-        raise ValueError("Tuổi phải dương, thu nhập từ 0 và điểm chi tiêu trong khoảng 1–100.")
-    row = pd.DataFrame([values], columns=bundle["features"])
-    return {
-        "cluster": int(bundle["model"].predict(row)[0]),
-        "outside_train_range": [
-            name for name, (low, high) in bundle["ranges"].items()
-            if not low <= values[name] <= high
-        ],
-    }
+def predict_customer(age, annual_income, spending_score, model_path):
+    """Chuẩn hóa ba giá trị theo scaler đã lưu, trả nhãn và tâm ở đơn vị gốc."""
+    values = np.array([age, annual_income, spending_score], dtype=float)
+    if not np.isfinite(values).all():
+        raise ValueError("Các giá trị phải là số hữu hạn.")
+    if values[0] <= 0 or values[1] < 0 or not 1 <= values[2] <= 100:
+        raise ValueError("Tuổi phải lớn hơn 0, thu nhập không âm, điểm chi tiêu từ 1 đến 100.")
+    model, scaler = load_model(Path(model_path))
+    features = ["Age", "Annual Income", "Spending Score"]
+    if scaler["features"] != features or scaler["fit_scope"] != "train_only":
+        raise ValueError("Thông số chuẩn hóa không phù hợp ba đặc trưng của bài lab.")
+    mean = np.array([scaler["mean"][name] for name in features], dtype=float)
+    std = np.array([scaler["std"][name] for name in features], dtype=float)
+    if not np.isfinite(mean).all() or not np.isfinite(std).all() or (std <= 0).any():
+        raise ValueError("Thông số chuẩn hóa đã lưu không hợp lệ.")
+    standardized = (values - mean) / std
+    cluster = int(model.predict(standardized.reshape(1, -1))[0])
+    center = model.cluster_centers_[cluster] * std + mean
+    return {"cluster": cluster, "center": dict(zip(features, center.tolist()))}
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Gán cụm cho một khách hàng mới.")
-    parser.add_argument("--age", type=float, required=True)
-    parser.add_argument("--income", type=float, required=True, help="Thu nhập hằng năm, đơn vị nghìn USD.")
-    parser.add_argument("--spending", type=float, required=True, help="Điểm chi tiêu từ 1 đến 100.")
-    parser.add_argument("--model", type=Path)
+def main():
+    """Nhận ba đặc trưng từ terminal và in cụm dự đoán cùng tâm cụm."""
+    parser = argparse.ArgumentParser(description="Gán cụm khách hàng bằng K-means đã huấn luyện.")
+    parser.add_argument("--age", type=float, required=True, help="Tuổi khách hàng")
+    parser.add_argument("--income", type=float, required=True, help="Thu nhập năm, cùng đơn vị dữ liệu gốc")
+    parser.add_argument("--spending", type=float, required=True, help="Điểm chi tiêu 1–100")
+    parser.add_argument("--model", default=str(Path(__file__).resolve().parents[1] / "models/kmeans.json"))
     args = parser.parse_args()
-    try:
-        path = args.model or ROOT / latest_run()["paths"]["model"] / "customer_clusters.joblib"
-        result = assign_customer(load_model(path), args.age, args.income, args.spending)
-    except (FileNotFoundError, ValueError) as error:
-        parser.error(str(error))
-    print(json.dumps(result, ensure_ascii=False))
+    result = predict_customer(args.age, args.income, args.spending, args.model)
+    print(f"Cụm dự đoán: {result['cluster']}")
+    for feature, value in result["center"].items():
+        print(f"Tâm cụm — {feature}: {value:.2f}")
 
 
 if __name__ == "__main__":

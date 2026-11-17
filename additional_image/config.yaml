@@ -1,0 +1,10 @@
+{
+  "image_path": "data/raw/grace_hopper.jpg",
+  "train_max_side": 120,
+  "cluster_counts": [3, 5, 8],
+  "n_init": 2,
+  "max_iter": 60,
+  "tol": 0.0001,
+  "random_state": 42,
+  "prediction_batch_size": 16384
+}

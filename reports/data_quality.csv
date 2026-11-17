@@ -1,0 +1,6 @@
+,dtype,missing,unique
+CustomerID,str,0,15079
+Age,int64,0,73
+Gender,str,0,2
+Annual Income,int64,0,14441
+Spending Score,int64,0,100

@@ -1,39 +1,53 @@
-# Tham số thực nghiệm Lab 03
+# Giải thích tham số của bài Lab 03
 
-## Dữ liệu và thiết kế thí nghiệm
+Tài liệu này giải thích các tham số khi phân cụm khách hàng bằng K-means. Cấu hình mặc định là điểm khởi đầu; kết quả lựa chọn K trên validation được ghi ở mục 6. Thiết lập chia dữ liệu được ghi ở mục 5.
 
-| Khóa trong `config.yaml` | Mặc định | Vai trò |
+## 1. Đầu vào và đầu ra của mô hình
+
+- **Input (đầu vào):** ba đặc trưng số đã được đưa về thang đo phù hợp: tuổi (`Age`), thu nhập hằng năm (`Annual Income`) và điểm chi tiêu (`Spending Score`).
+- **Output (đầu ra):** mã cụm được gán cho mỗi khách hàng và các tâm cụm được học từ dữ liệu. Mã cụm chỉ là tên nhóm, không thể hiện thứ hạng.
+- **Mục đích:** tìm những khách hàng có đặc điểm gần nhau. Mô hình không có nhãn cụm đúng sẵn để học.
+
+## 2. Siêu tham số của K-means
+
+**Hyperparameter (siêu tham số)** là giá trị được chọn trước khi huấn luyện, ảnh hưởng tới cách thuật toán hoạt động. Các tên trong bảng đã được cài đặt trong `src/model.py`.
+
+| Tên dự kiến | Ý nghĩa và tác dụng | Cách lựa chọn hoặc kiểm tra |
 |---|---|---|
-| `data.path` | `data/raw/Mall_Customers.csv` | Đường dẫn tương đối so với thư mục dự án hoặc đường dẫn tuyệt đối. |
-| `data.test_size` | `0.20` | Giữ riêng 20% khách để đánh giá mô hình đã chọn. Khi đổi tỷ lệ, giữ đủ điểm trong từng fold để tính Silhouette. |
-| `data.seed` | `42` | Cố định phép chia dữ liệu, xáo trộn fold, khởi tạo và dãy seed dùng khi kiểm tra độ ổn định. |
-| `features` | Tuổi, thu nhập hằng năm, điểm chi tiêu | Ba biến số của bài. Thứ tự cột được lưu cùng mô hình. |
-| `training.folds` | `5` | Số fold của KFold có xáo trộn, chỉ chạy trên train. Với 160 khách, mỗi lượt có 128 khách fit và 32 khách validation. |
-| `training.cluster_counts` | `[2, 3, 4, 5, 6, 7, 8, 9, 10]` | Lưới số cụm/thành phần. `k=1` nằm ngoài miền xác định của Silhouette. |
-| `stability.repeats` | `30` | Số lần lấy mẫu lại để đo ARI trên cùng 40 khách test. |
-| `stability.fraction` | `0.80` | Lấy 80% train không hoàn lại trong mỗi lượt. Tăng tỷ lệ thường làm các mẫu fit giống train gốc hơn. |
+| `n_clusters` | Số cụm K cần tìm. Ví dụ K = 3 yêu cầu mô hình tạo ba nhóm. | Thử nhiều K hợp lệ; tham khảo Elbow, Silhouette và khả năng giải thích cụm. Không mặc định ví dụ K = 3 là kết quả của bài. |
+| `init` | Cách chọn các tâm cụm ban đầu. | Hiện chỉ hỗ trợ `random`: lấy ngẫu nhiên K điểm có giá trị khác nhau. Chưa triển khai K-means++. |
+| `n_init` | Số lần chạy với các tâm ban đầu khác nhau; chọn nghiệm tốt nhất theo inertia. | Dùng số nguyên dương và ghi rõ giá trị thực tế; nhiều lần khởi tạo thường tốn thêm thời gian. |
+| `max_iter` | Số vòng lặp tối đa cho mỗi lần khởi tạo. | Dùng số nguyên dương; kiểm tra mô hình dừng do hội tụ hay do chạm giới hạn. |
+| `tol` | Ngưỡng dung sai dùng trong điều kiện dừng khi tâm cụm thay đổi rất ít. | Dùng giá trị không âm; định nghĩa chính xác độ thay đổi cần được ghi theo cách triển khai. |
+| `random_state` | Hạt giống sinh số ngẫu nhiên, giúp lặp lại cùng quá trình khởi tạo trong cùng điều kiện. | Ghi rõ giá trị sử dụng; cùng seed không đảm bảo kết quả giống nhau nếu dữ liệu hoặc cách triển khai thay đổi. |
 
-## K-means
+## 3. Tham số học được và kết quả huấn luyện
 
-| Khóa | Mặc định | Tác động |
+**Parameter (tham số mô hình)** là giá trị mô hình học từ dữ liệu. Với K-means, đó là tọa độ các **centroid (tâm cụm)** trong không gian đặc trưng đã xử lý. Ví dụ, mỗi tâm của bài này có ba tọa độ tương ứng với ba đặc trưng.
+
+Ngoài ra có thể lưu:
+
+- `inertia`: tổng bình phương khoảng cách từ mỗi điểm đến tâm cụm được gán. Giá trị nhỏ hơn không tự chứng minh phân cụm tốt hơn vì inertia thường giảm khi tăng K.
+- Số vòng lặp đã thực hiện và điều kiện dừng: giúp kiểm tra quá trình huấn luyện.
+- Tham số tiền xử lý học từ dữ liệu huấn luyện, ví dụ trung bình và độ lệch chuẩn của từng cột nếu dùng standardization (chuẩn hóa theo trung bình và độ lệch chuẩn). Các thông số này cần được lưu cùng mô hình để xử lý dữ liệu mới nhất quán.
+
+## 4. Tham số liên quan đến dữ liệu và đánh giá
+
+| Nội dung | Ý nghĩa | Lưu ý |
 |---|---|---|
-| `init` | `k-means++` | Phân tán các tâm khởi tạo để giảm khả năng đặt nhiều tâm ban đầu trong cùng một vùng. |
-| `n_init` | `30` | Thử 30 lần khởi tạo cho mỗi lần fit và giữ nghiệm có inertia thấp nhất. Tăng số lần có thể giảm ảnh hưởng của khởi tạo với chi phí tính toán cao hơn. |
-| `max_iter` | `300` | Giới hạn vòng cập nhật trong mỗi lần khởi tạo. |
+| Tỷ lệ chia dữ liệu | Tỷ lệ mẫu dành cho train (huấn luyện), validation (chọn cấu hình) và test (đánh giá cuối), nếu chọn chia tập. | Chia trước khi học thông số chuẩn hóa; chỉ dùng train để tính các thông số đó. Cần giải thích lý do chia hay không chia cho bài toán phân cụm. |
+| Khoảng K thử nghiệm | Tập các giá trị `n_clusters` đem ra so sánh. | Chỉ xét K hợp lệ với số mẫu; chọn trên dữ liệu dành cho lựa chọn cấu hình, không dựa vào tập test cuối. |
+| Tham số lấy mẫu Silhouette | Số điểm được dùng nếu tính chỉ số trên một mẫu con. | Ghi rõ số điểm, cách lấy mẫu và seed; kiểm tra có ít nhất hai cụm và số cụm nhỏ hơn số điểm được đánh giá. |
 
-K-means chọn tâm gần nhất trong không gian chuẩn hóa và tối thiểu hóa tổng bình phương khoảng cách tới tâm. Inertia dùng nội bộ để chọn nghiệm khởi tạo cho cùng `k`. Khi tăng `k`, nghiệm tối ưu có thể giảm inertia chỉ nhờ có thêm tâm, nên inertia thô không được dùng để xếp hạng các giá trị `k`. [Tài liệu KMeans](https://scikit-learn.org/1.7/modules/generated/sklearn.cluster.KMeans.html)
+**Elbow (phương pháp khuỷu tay)** quan sát đường inertia theo K để tìm vùng mà mức giảm bắt đầu chậm lại. **Silhouette (hệ số bóng)** đánh giá tương đối mức gần các điểm trong cùng cụm so với cụm khác. Cả hai chỉ hỗ trợ lựa chọn; cần xem thêm đặc điểm thực tế của các cụm.
 
-## Gaussian Mixture
+## 5. Thiết lập dữ liệu đã thực hiện
 
-| Khóa | Mặc định | Tác động |
-|---|---|---|
-| `covariance_type` | `full` | Mỗi thành phần có ma trận hiệp phương sai riêng, cho phép cụm có độ dài và hướng khác nhau. Cấu hình này cần ước lượng nhiều tham số hơn `diag`. |
-| `n_init` | `15` | Thử nhiều khởi tạo EM và giữ nghiệm có cận dưới log-likelihood cao nhất. |
-| `max_iter` | `300` | Giới hạn vòng lặp EM cho mỗi khởi tạo. |
-| `reg_covar` | `0.000001` | Cộng một giá trị dương vào đường chéo hiệp phương sai để giảm nguy cơ ma trận suy biến. |
+- Tỷ lệ train / validation / test: 70% / 15% / phần còn lại, tương ứng 10.555 / 2.261 / 2.263 khách trong dữ liệu hiện tại.
+- `random_state = 42` điều khiển việc xáo trộn chia dữ liệu. Cấu hình K-means cũng có seed riêng, hiện đặt 42; hai seed có vai trò khác nhau.
+- Chuẩn hóa Z-score dùng độ lệch chuẩn tổng thể `ddof=0`; trung bình và độ lệch chuẩn được tính từ train và lưu trong `data/processed/train_scaler.json`.
+- Các thông số mô hình và cách chọn K của lần thực nghiệm được trình bày ở mục 6.
 
-Để tính các chỉ số chung, GMM gán nhãn cứng theo thành phần có xác suất hậu nghiệm lớn nhất. Pipeline yêu cầu Silhouette xác định ở cả 5 fold và GMM hội tụ ở cả 5 fold. Cột `converged_folds` của K-means ghi số lượt fit hoàn tất, do API K-means không công bố cờ `converged_` như GMM. [Tài liệu GaussianMixture](https://scikit-learn.org/1.7/modules/generated/sklearn.mixture.GaussianMixture.html)
+## 6. Trạng thái triển khai
 
-## Bài phân đoạn ảnh
-
-`--k` nhận một hoặc nhiều số cụm màu. `--max-side` là giới hạn cạnh dài nhất của ảnh dùng để fit. Cạnh lớn hơn giữ nhiều chi tiết hơn và tăng số pixel cần xử lý. Phép tái tạo dùng tâm cụm đã làm tròn về RGB 8-bit và nội suy láng giềng gần nhất để duy trì bảng màu ở kích thước xuất.
+`config.yaml` đặt cấu hình khởi đầu: `n_clusters=3`, `init=random`, `n_init=5`, `max_iter=300`, `tol=0.0001`, `random_state=42`. `tol` đo chuẩn Euclid của toàn bộ thay đổi tọa độ các tâm giữa hai vòng. Thực nghiệm đã thử K=2–8; lựa chọn K=6 theo Silhouette validation như báo cáo. Giá trị `n_clusters=3` trong mục model là giá trị ban đầu và được thay bởi từng K khi tìm kiếm, không phải K được chọn. Mô hình lưu tại `models/kmeans.json` chứa K=6 và thông số chuẩn hóa train. Silhouette được tính chính xác trên toàn bộ tập đánh giá bằng các lô 128 điểm, không lấy mẫu.

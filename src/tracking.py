@@ -1,53 +1,68 @@
+"""Ghi trạng thái và kết quả từng lần huấn luyện theo cách đơn giản."""
+
+import csv
+import hashlib
 import json
+import platform
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 
-from .preprocess import ROOT
+import numpy as np
+import pandas as pd
 
 
-def write_json(path: Path, payload: dict) -> None:
-    temporary = path.with_name(f".{path.name}.{uuid4().hex}.tmp")
-    temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
-    temporary.replace(path)
+def create_run(root):
+    """Tạo mã lần chạy duy nhất và thư mục lưu log, trạng thái, thực nghiệm."""
+    root = Path(root)
+    run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "_" + uuid4().hex[:8]
+    for name in ("logs", "progress_results", "reports/experiments"):
+        (root / name).mkdir(parents=True, exist_ok=True)
+    update_progress(root, run_id, "TRAINING", "STARTED")
+    return run_id
 
 
-def latest_run() -> dict:
-    path = ROOT / "progress_results" / "latest.json"
-    return json.loads(path.read_text(encoding="utf-8"))
+def update_progress(root, run_id, step, status, error=None):
+    """Ghi trạng thái mới nhất vào JSON và nối sự kiện có thời gian UTC vào log."""
+    root = Path(root)
+    record = {"run_id": run_id, "step": step, "status": status,
+              "timestamp_utc": datetime.now(timezone.utc).isoformat(), "error": error}
+    (root / "progress_results" / f"{run_id}.json").write_text(
+        json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
+    with (root / "logs" / f"{run_id}.log").open("a", encoding="utf-8") as stream:
+        stream.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
-class Run:
-    def __init__(self) -> None:
-        now = datetime.now(timezone.utc)
-        self.id = f"{now:%Y%m%dT%H%M%SZ}-{uuid4().hex[:8]}"
-        self.paths = {
-            name: ROOT / relative / self.id
-            for name, relative in {
-                "data": "data/processed",
-                "reports": "reports",
-                "model": "models",
-                "images": "docs/images",
-            }.items()
-        }
-        for path in self.paths.values():
-            path.mkdir(parents=True)
-        (ROOT / "logs").mkdir(exist_ok=True)
-        (ROOT / "progress_results").mkdir(exist_ok=True)
-        self.history = []
+def file_hash(path):
+    """Tính SHA-256 của tệp để kiểm tra đầu vào của lần chạy."""
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        while block := stream.read(1024 * 1024):
+            digest.update(block)
+    return digest.hexdigest()
 
-    def update(self, stage: str, message: str, status: str = "running") -> dict:
-        event = {"time_utc": datetime.now(timezone.utc).isoformat(), "stage": stage, "message": message}
-        self.history.append(event)
-        with (ROOT / "logs" / f"{self.id}.log").open("a", encoding="utf-8") as log:
-            log.write(f"{event['time_utc']} [{stage}] {message}\n")
-        manifest = {
-            "run_id": self.id,
-            "status": status,
-            "paths": {name: path.relative_to(ROOT).as_posix() for name, path in self.paths.items()},
-            "history": self.history,
-        }
-        write_json(ROOT / "progress_results" / f"{self.id}.json", manifest)
-        if status == "completed":
-            write_json(ROOT / "progress_results" / "latest.json", manifest)
-        return manifest
+
+def log_experiment(root, run_id, config, metrics):
+    """Lưu cấu hình, kết quả, model và dấu vết dữ liệu riêng cho lần chạy thành công."""
+    root = Path(root)
+    folder = root / "reports" / "experiments" / run_id
+    folder.mkdir(parents=True, exist_ok=False)
+    inputs = {key: {"path": value, "sha256": file_hash(root / value)}
+              for key, value in config["data"].items() if key.endswith("_path")}
+    record = {"run_id": run_id, "finished_at_utc": datetime.now(timezone.utc).isoformat(),
+              "config": config, "metrics": metrics, "inputs": inputs,
+              "versions": {"python": platform.python_version(), "numpy": np.__version__, "pandas": pd.__version__}}
+    (folder / "experiment.json").write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
+    shutil.copy2(root / "models/kmeans.json", folder / "kmeans.json")
+    shutil.copy2(root / "reports/k_selection.csv", folder / "k_selection.csv")
+    summary = root / "reports/experiment_logs.csv"
+    fields = ["run_id", "finished_at_utc", "chosen_k", "train_inertia", "validation_silhouette", "test_silhouette"]
+    is_new = not summary.exists() or summary.stat().st_size == 0
+    with summary.open("a", encoding="utf-8", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        if is_new:
+            writer.writeheader()
+        writer.writerow({"run_id": run_id, "finished_at_utc": record["finished_at_utc"],
+                         **{key: metrics[key] for key in fields[2:]}})
+    return folder

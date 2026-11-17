@@ -1,0 +1,21 @@
+{
+  "method": "z_score",
+  "ddof": 0,
+  "fit_scope": "train_only",
+  "features": [
+    "Age",
+    "Annual Income",
+    "Spending Score"
+  ],
+  "random_state": 42,
+  "mean": {
+    "Age": 53.98256750355282,
+    "Annual Income": 109714.98342018001,
+    "Spending Score": 50.38427285646613
+  },
+  "std": {
+    "Age": 21.180214734577394,
+    "Annual Income": 52281.08226608123,
+    "Spending Score": 28.719808795862193
+  }
+}
